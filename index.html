@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SamplePage</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+</head>
+<body>
+<button onclick="login('Ammonix','tstpw')">login</button>
+<button onclick="logout()">logout</button>
+<button onclick="getArtists()">getArtists</button>
+</body>
+<script>
+    function getArtists() {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: "backend/Main.php",
+            data: {
+                function: "getArtists"
+            }
+        }).done(function (data) {
+            console.log(data);
+            console.log(data.response[0].data[0].data_Nr_1.artists[0].artistName);
+            $("body").append("<br>"+data.response[0].data[0].data_Nr_1.artists[0].artistName);
+        });
+    }
+    function login(username, password) {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: "backend/Main.php",
+            data: {
+                function: "login",
+                username: username,
+                password: password,
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+    }
+    function logout() {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: "backend/Main.php",
+            data: {
+                function: "logout"
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+    }
+</script>
+</html>
