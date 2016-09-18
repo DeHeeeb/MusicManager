@@ -12,47 +12,36 @@ class Artist extends DBObject
 {
     private $_name;
     private $_genres;
+    private $_year;
+    private $_picturePath;
 
-    /**
-     * Artist constructor.
-     * @param int $_pk
-     * @param string $_name
-     * @param array $_genres
-     */
-    public function __construct(int $_pk, string $_name, array $_genres)
+    public function __construct(int $_pk, string $_name, array $_genres, string $_year, string $_picturePath)
     {
         parent::__construct($_pk);
         $this->_name = $_name;
         $this->_genres = $_genres;
+        $this->_year = $_year;
+        $this->_picturePath = $_picturePath;
     }
 
-    /**
-     * @return string
-     */
+
     public function getName(): string
     {
         return $this->_name;
     }
 
-    /**
-     * @param string $name
-     */
     public function setName(string $name)
     {
         $this->_name = $name;
     }
 
-    /**
-     * @return array
-     */
+
     public function getGenres(): array
     {
         return $this->_genres;
     }
 
-    /**
-     * @param array $genres
-     */
+
     public function setGenres(array $genres)
     {
         $this->_genres = $genres;
@@ -61,6 +50,30 @@ class Artist extends DBObject
     public function addGenre(Genre $genre)
     {
         $this->_genres[] = $genre;
+    }
+
+
+    public function getYear(): string
+    {
+        return $this->_year;
+    }
+
+
+    public function setYear(string $year)
+    {
+        $this->_year = $year;
+    }
+
+
+    public function getPicturePath(): string
+    {
+        return $this->_picturePath;
+    }
+
+
+    public function setPicturePath(string $picturePath)
+    {
+        $this->_picturePath = $picturePath;
     }
 
 }

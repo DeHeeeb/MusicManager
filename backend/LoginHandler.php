@@ -6,9 +6,6 @@
  * Date: 16.09.2016
  * Time: 15:02
  */
-include_once("User.php");
-include_once("Role.php");
-
 abstract class LoginHandler
 {
     public static function login($username, $pw) : User

@@ -13,6 +13,9 @@ include_once("Subgenre.php");
 include_once("PermissionHandler.php");
 include_once("ResponseHandler.php");
 include_once("LoginHandler.php");
+include_once("User.php");
+include_once("Role.php");
+
 
 class Main
 {
@@ -35,7 +38,7 @@ class Main
         $this->initializeUser();
     }
 
-    public function getUser()
+    public function getUser():User
     {
         return $this->_user;
     }
@@ -235,14 +238,16 @@ class Main
     {
         $username = $_POST ["username"];
         $password = $_POST["password"];
+        if ($this->getUser()->getRole() == 0) {
+            $userObj = LoginHandler::login($username, $password);
 
-        $userObj = LoginHandler::login($username, $password);
-
-        if ($userObj->getUsername() == "") {
-            $userObj = $this->createVisitor();
+            if ($userObj->getUsername() == "") {
+                $userObj = $this->createVisitor();
+            }
+            $this->_user = $userObj;
+        } else {
+            ResponseHandler::addErrorMessage("User '" . $this->getUser()->getUsername() . "' is already logged in.");
         }
-        $this->_user = $userObj;
-
     }
 
     public function logout()
@@ -253,10 +258,10 @@ class Main
     public function getCurrentUser()
     {
         ResponseHandler::addData(array("user" => array(
-            "username" => $this->_user->getUsername(),
-            "email" => $this->_user->getEmail(),
-            "createtime" => $this->_user->getCreatetime(),
-            "role" => $this->_user->getRole())
+            "username" => $this->getUser()->getUsername(),
+            "email" => $this->getUser()->getEmail(),
+            "createtime" => $this->getUser()->getCreatetime(),
+            "role" => $this->getUser()->getRole())
         ));
     }
 
