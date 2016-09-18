@@ -15,7 +15,7 @@ class Artist extends DBObject
     private $_year;
     private $_picturePath;
 
-    public function __construct(int $_pk, string $_name, array $_genres, string $_year, string $_picturePath)
+    public function __construct(int $_pk, string $_name, string $_year, string $_picturePath, array $_genres)
     {
         parent::__construct($_pk);
         $this->_name = $_name;

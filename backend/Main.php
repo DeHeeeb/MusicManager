@@ -64,7 +64,7 @@ class Main
         $allArtists = $this->getAllArtistsFromDB();
         $allArtistsObj = array();
         foreach ($allArtists as $artist) {
-            $artistObj = new Artist($artist["artist_PK"], $artist["artistName"], array());
+            $artistObj = new Artist($artist["artist_PK"], $artist["artistName"], $artist["year"], $artist["picturePath"], array());
 
 
             $subgenreKeys = $this->getArtistHasSubgenreKeys($artistObj->getPk());
@@ -108,9 +108,9 @@ class Main
         $query = "CALL getArtists();";
         if ($stmt = $mysqli->prepare($query)) {
             $stmt->execute();
-            $stmt->bind_result($artist_PK, $artistName);
+            $stmt->bind_result($artist_PK, $artistName, $year, $picturePath);
             while ($stmt->fetch()) {
-                $getArtistsResults[] = array("artist_PK" => $artist_PK, "artistName" => $artistName);
+                $getArtistsResults[] = array("artist_PK" => $artist_PK, "artistName" => $artistName, "year" => $year, "picturePath" => $picturePath);
             }
             return $getArtistsResults;
         }
@@ -192,7 +192,7 @@ class Main
                 }
                 $genres [] = array("genreName" => $genre->getName(), "subgenres" => $subgenres);
             }
-            $artistsArr [] = array("artistName" => $artist->getName(), "genres" => $genres);
+            $artistsArr [] = array("artistName" => $artist->getName(),"year" => $artist->getYear(),"picturePath" => $artist->getPicturePath(), "genres" => $genres);
         }
         return array("artists" => $artistsArr);
 
