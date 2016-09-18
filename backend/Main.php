@@ -248,7 +248,16 @@ class Main
     public function logout()
     {
         LoginHandler::logout();
+    }
 
+    public function getCurrentUser()
+    {
+        ResponseHandler::addData(array("user" => array(
+            "username" => $this->_user->getUsername(),
+            "email" => $this->_user->getEmail(),
+            "createtime" => $this->_user->getCreatetime(),
+            "role" => $this->_user->getRole())
+        ));
     }
 
     public function getArtists()

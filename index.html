@@ -11,6 +11,19 @@
 <button onclick="getArtists()">getArtists</button>
 </body>
 <script>
+    getCurrentUser();
+    function getCurrentUser() {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: "backend/Main.php",
+            data: {
+                function: "getCurrentUser"
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+    }
     function getArtists() {
         $.ajax({
             method: "POST",
