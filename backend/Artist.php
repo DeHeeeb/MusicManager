@@ -6,7 +6,7 @@
  * Date: 14.09.2016
  * Time: 22:01
  */
-include_once("db/Gorm/Gorm.Base/DBObject.php");
+
 
 class Artist extends DBObject
 {

@@ -7,6 +7,7 @@
  * Time: 23:12
  */
 include_once("db/DBconnect.php");
+include_once("db/Gorm/Gorm.Base/DBObject.php");
 include_once("Artist.php");
 include_once("Genre.php");
 include_once("Subgenre.php");
@@ -15,13 +16,19 @@ include_once("ResponseHandler.php");
 include_once("LoginHandler.php");
 include_once("User.php");
 include_once("Role.php");
+include_once("ArtistList.php");
 
 
 class Main
 {
+
     private static $_instance; //The single instance
+    /* @var $_allArtists Artist[] */
     private $_allArtists;
+    /* @var $_user User */
     private $_user;
+    /* @var $_allArtistLists ArtistList[] */
+    private $_allArtistLists;
 
 
     public static function getInstance()
@@ -37,12 +44,6 @@ class Main
     {
         $this->initializeUser();
     }
-
-    public function getUser():User
-    {
-        return $this->_user;
-    }
-
 
     private function initializeUser()
     {
@@ -96,6 +97,63 @@ class Main
         }
 
         $this->_allArtists = $allArtistsObj;
+    }
+
+    private function initializeAllArtistLists()
+    {
+        /* @var $allArtists Artist[] */
+        $this->initializeAllArtists();
+        $allArtists = $this->_allArtists;
+        $allArtistLists = $this->getArtistLists();
+        $artistListObjArray = array();
+        $artistsArrObj = array();
+        $artistsArrKey = array();
+        $artistListsUniqueKey = array();
+        //var_dump($allArtistLists);
+        foreach ($allArtistLists as $artistList) {
+            $artistListsUniqueKey[] = array("artistlist_PK" => $artistList["artistlist_PK"], "listName" => $artistList["listName"]);
+        }
+        $artistListsUniqueKey = array_map("unserialize", array_unique(array_map("serialize", $artistListsUniqueKey)));
+        foreach ($artistListsUniqueKey as $artistList) {
+            $artistListObjArray[$artistList["artistlist_PK"]] = new ArtistList($artistList["artistlist_PK"], $artistList["listName"], array());
+        }
+
+        foreach ($allArtistLists as $artistList) {
+            foreach ($allArtists as $artist) {
+
+                if ($artistList["artist_PK"] == $artist->getPk()) {
+                    $artistsArrObj [] = $artist;
+                }
+            }
+            //var_dump($artistList["artistlist_PK"]);echo"asd";
+           // var_dump($artistListObjArray);
+            $artistListObjArray[$artistList["artistlist_PK"]]->setArtists($artistsArrObj);
+
+        }
+
+
+        $this->_allArtistLists = $artistListObjArray;
+        var_dump($this->_allArtistLists);
+    }
+
+    private function getArtistLists() : array
+    {
+        $db = DBconnect::getInstance();
+        $mysqli = $db->getConnection();
+
+        $mysqli->autocommit(FALSE);
+        $getArtistListResults = array();
+        $query = "CALL getArtistLists();";
+        if ($stmt = $mysqli->prepare($query)) {
+            $stmt->execute();
+            $stmt->bind_result($artistlist_PK, $listName, $artist_PK);
+            while ($stmt->fetch()) {
+                $getArtistListResults[] = array("artistlist_PK" => $artistlist_PK, "listName" => $listName, "artist_PK" => $artist_PK);
+            }
+            return $getArtistListResults;
+        }
+        ResponseHandler::addErrorMessage("Unknown error in prepare statement of query: " . $query);
+        return array();
     }
 
     private function getAllArtistsFromDB() : array
@@ -180,6 +238,8 @@ class Main
 
     public function getAllArtists() :array
     {
+        /* @var $genre Genre */
+        /* @var $subgenre Subgenre */
         $this->initializeAllArtists();
         $artistsArr = array();
         foreach ($this->_allArtists as $artist) {
@@ -192,53 +252,89 @@ class Main
                 }
                 $genres [] = array("genreName" => $genre->getName(), "subgenres" => $subgenres);
             }
-            $artistsArr [] = array("artistName" => $artist->getName(),"year" => $artist->getYear(),"picturePath" => $artist->getPicturePath(), "genres" => $genres);
+            $artistsArr [] = array("artistName" => $artist->getName(), "year" => $artist->getYear(), "picturePath" => $artist->getPicturePath(), "genres" => $genres);
         }
         return array("artists" => $artistsArr);
 
     }
 
-
-    private function getArtistsDreamArr():array
+    public function getArtistsByList(int $listPk):array
     {
-        return array(
-            array(
-                "artistName" => "Borknagar",
-                "genres" => array(
-                    array(
-                        "genreName" => "Metal",
-                        "subgenres" => array(
-                            array("subgenreName" => "Progressive Black Metal"),
-                            array("subgenreName" => "Folk Metal")
-                        )
-                    )
-                )
-            ),
-            array(
-                "artistName" => "Hollywood Undead",
-                "genres" => array(
-                    array(
-                        "genreName" => "Hip-Hop",
-                        "subgenres" => array(
-                            array("subgenreName" => "Rap")
-                        )
-                    ),
-                    array(
-                        "genreName" => "Rock",
-                        "subgenres" => array(
-                            array("subgenreName" => "Alternative Rock")
-                        )
-                    )
-                )
-            )
-        );
+        /* @var $artist Artist */
+        /* @var $genre Genre */
+        /* @var $subgenre Subgenre */
+
+        $this->initializeAllArtistLists();
+        return $this->_allArtistLists;
+        $artistLists = array();
+        foreach ($this->_allArtistLists as $artistList) {
+            if ($artistList->getPk() == $listPk) {
+                $artistsArr = array();
+
+                foreach ($artistList->getArtists() as $artist) {
+                    $genres = array();
+
+                    foreach ($artist->getGenres() as $genre) {
+                        $subgenres = array();
+
+                        foreach ($genre->getSubgenres() as $subgenre) {
+                            $subgenres [] = array("subgenreName" => $subgenre->getName());
+                        }
+                        $genres [] = array("genreName" => $genre->getName(), "subgenres" => $subgenres);
+                    }
+                    $artistsArr [] = array("artistName" => $artist->getName(), "year" => $artist->getYear(), "picturePath" => $artist->getPicturePath(), "genres" => $genres);
+                }
+                $artistLists[] = array("listName" => $artistList->getName(), "artists" => $artistsArr);
+            }
+        }
+        return array("artistLists" => $artistLists);
     }
+
+    /*
+        private function getArtistsDreamArr():array
+        {
+            return array(
+                array(
+                    "artistName" => "Borknagar",
+                    "genres" => array(
+                        array(
+                            "genreName" => "Metal",
+                            "subgenres" => array(
+                                array("subgenreName" => "Progressive Black Metal"),
+                                array("subgenreName" => "Folk Metal")
+                            )
+                        )
+                    )
+                ),
+                array(
+                    "artistName" => "Hollywood Undead",
+                    "genres" => array(
+                        array(
+                            "genreName" => "Hip-Hop",
+                            "subgenres" => array(
+                                array("subgenreName" => "Rap")
+                            )
+                        ),
+                        array(
+                            "genreName" => "Rock",
+                            "subgenres" => array(
+                                array("subgenreName" => "Alternative Rock")
+                            )
+                        )
+                    )
+                )
+            );
+        }
+    */
+    //Frontend request Functions
 
     public function login()
     {
+
+
         $username = $_POST ["username"];
         $password = $_POST["password"];
-        if ($this->getUser()->getRole() == 0) {
+        if ($this->_user->getRole() == 0) {
             $userObj = LoginHandler::login($username, $password);
 
             if ($userObj->getUsername() == "") {
@@ -246,7 +342,7 @@ class Main
             }
             $this->_user = $userObj;
         } else {
-            ResponseHandler::addErrorMessage("User '" . $this->getUser()->getUsername() . "' is already logged in.");
+            ResponseHandler::addErrorMessage("User '" . $this->_user->getUsername() . "' is already logged in.");
         }
     }
 
@@ -255,22 +351,27 @@ class Main
         LoginHandler::logout();
     }
 
-    public function getCurrentUser()
+    public function getUser()
     {
         ResponseHandler::addData(array("user" => array(
-            "username" => $this->getUser()->getUsername(),
-            "email" => $this->getUser()->getEmail(),
-            "createtime" => $this->getUser()->getCreatetime(),
-            "role" => $this->getUser()->getRole())
+            "username" => $this->_user->getUsername(),
+            "email" => $this->_user->getEmail(),
+            "createtime" => $this->_user->getCreatetime(),
+            "role" => $this->_user->getRole())
         ));
     }
 
     public function getArtists()
     {
-        ResponseHandler::addData($this->getAllArtists());
-    }
-}
 
+        if (isset ($_POST["artistList"]) || !empty($_POST["artistList"])) {
+            ResponseHandler::addData($this->getArtistsByList($_POST["artistList"]));
+        } else {
+            ResponseHandler::addData($this->getAllArtists());
+        }
+    }
+
+}
 
 //Procedural Start
 

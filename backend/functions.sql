@@ -1,3 +1,4 @@
+ROP procedure IF EXISTS `ammonixc_musicmanager`.`getArtists`;
 
 DELIMITER $$
 USE `ammonixc_musicmanager`$$
@@ -9,9 +10,8 @@ END$$
 
 DELIMITER ;
 
--- -----------------------------------------------------
--- procedure getSubgenreByKey
--- -----------------------------------------------------
+USE `ammonixc_musicmanager`;
+DROP procedure IF EXISTS `ammonixc_musicmanager`.`getSubgenreByKey`;
 
 DELIMITER $$
 USE `ammonixc_musicmanager`$$
@@ -24,9 +24,8 @@ END$$
 
 DELIMITER ;
 
--- -----------------------------------------------------
--- procedure getGenreByKey
--- -----------------------------------------------------
+USE `ammonixc_musicmanager`;
+DROP procedure IF EXISTS `ammonixc_musicmanager`.`getGenreByKey`;
 
 DELIMITER $$
 USE `ammonixc_musicmanager`$$
@@ -39,9 +38,8 @@ END$$
 
 DELIMITER ;
 
--- -----------------------------------------------------
--- procedure getUserByUsername
--- -----------------------------------------------------
+USE `ammonixc_musicmanager`;
+DROP procedure IF EXISTS `ammonixc_musicmanager`.`getUserByUsername`;
 
 DELIMITER $$
 USE `ammonixc_musicmanager`$$
@@ -54,9 +52,8 @@ CREATE  PROCEDURE getUserByUsername(_username VARCHAR(250))
 
 DELIMITER ;
 
--- -----------------------------------------------------
--- procedure getArtistHasSubgenreKeys
--- -----------------------------------------------------
+USE `ammonixc_musicmanager`;
+DROP procedure IF EXISTS `ammonixc_musicmanager`.`getArtistHasSubgenreKeys`;
 
 DELIMITER $$
 USE `ammonixc_musicmanager`$$
@@ -65,6 +62,19 @@ CREATE  PROCEDURE getArtistHasSubgenreKeys(_artist_PK INT (11))
     SELECT  subgenre_PK
     FROM artist_has_subgenre
     WHERE artist_PK = _artist_PK;
+  END$$
+
+DELIMITER ;
+
+USE `ammonixc_musicmanager`;
+DROP procedure IF EXISTS `ammonixc_musicmanager`.`getArtistLists`;
+
+DELIMITER $$
+USE `ammonixc_musicmanager`$$
+CREATE  PROCEDURE getArtistLists()
+BEGIN
+ SELECT artistlist.artistlist_PK, artistlist.name, artist_has_artistlist.artist_PK
+  FROM artistlist INNER JOIN artist_has_artistlist ON artistlist.artistlist_PK = artist_has_artistlist.artistlist_PK;
   END$$
 
 DELIMITER ;
