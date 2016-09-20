@@ -73,8 +73,8 @@ DELIMITER $$
 USE `ammonixc_musicmanager`$$
 CREATE  PROCEDURE getArtistLists()
 BEGIN
- SELECT artistlist.artistlist_PK, artistlist.name, artist_has_artistlist.artist_PK
-  FROM artistlist INNER JOIN artist_has_artistlist ON artistlist.artistlist_PK = artist_has_artistlist.artistlist_PK;
+SELECT artistlist.artistlist_PK, artistlist.name, artist_has_artistlist.artist_PK
+  FROM artistlist INNER JOIN artist_has_artistlist ON artistlist.artistlist_PK = artist_has_artistlist.artistlist_PK ORDER BY artistlist.artistlist_PK ASC;
   END$$
 
 DELIMITER ;

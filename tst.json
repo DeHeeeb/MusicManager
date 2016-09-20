@@ -1,0 +1,122 @@
+{
+  "response": [
+    {
+      "data": [
+        {
+          "data_Nr_1": {
+            "artistLists": [
+              {
+                "listName": "Chill Music",
+                "artists": [
+                  {
+                    "artistName": "Borknagar",
+                    "year": "0",
+                    "picturePath": "",
+                    "genres": [
+                      {
+                        "genreName": "Metal",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Progressive Black Metal"
+                          },
+                          {
+                            "subgenreName": "Folk Metal"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "artistName": "Gloryhammer",
+                    "year": "0",
+                    "picturePath": "",
+                    "genres": [
+                      {
+                        "genreName": "Metal",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Heroic Fantasy Power Metal"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "artistName": "Gary Washington",
+                    "year": "0",
+                    "picturePath": "",
+                    "genres": [
+                      {
+                        "genreName": "Hip-Hop",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Battle Rap"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "responses": [
+    {
+      "data": [
+        {
+          "data_Nr_1": {
+            "artistLists": [
+              {
+                "listName": "Hardcore",
+                "artists": [
+                  {
+                    "artistName": "Gloryhammer",
+                    "year": "0",
+                    "picturePath": "",
+                    "genres": [
+                      {
+                        "genreName": "Metal",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Heroic Fantasy Power Metal"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "artistName": "Hollywood Undead",
+                    "year": "0",
+                    "picturePath": "",
+                    "genres": [
+                      {
+                        "genreName": "Hip-Hop",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Rap"
+                          }
+                        ]
+                      },
+                      {
+                        "genreName": "Rock",
+                        "subgenres": [
+                          {
+                            "subgenreName": "Alternative Rock"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -101,39 +101,29 @@ class Main
 
     private function initializeAllArtistLists()
     {
-        /* @var $allArtists Artist[] */
         $this->initializeAllArtists();
         $allArtists = $this->_allArtists;
         $allArtistLists = $this->getArtistLists();
         $artistListObjArray = array();
         $artistsArrObj = array();
-        $artistsArrKey = array();
-        $artistListsUniqueKey = array();
-        //var_dump($allArtistLists);
+        $lastArtistList = array("artistlist_PK" => 0);
         foreach ($allArtistLists as $artistList) {
-            $artistListsUniqueKey[] = array("artistlist_PK" => $artistList["artistlist_PK"], "listName" => $artistList["listName"]);
-        }
-        $artistListsUniqueKey = array_map("unserialize", array_unique(array_map("serialize", $artistListsUniqueKey)));
-        foreach ($artistListsUniqueKey as $artistList) {
             $artistListObjArray[$artistList["artistlist_PK"]] = new ArtistList($artistList["artistlist_PK"], $artistList["listName"], array());
         }
-
         foreach ($allArtistLists as $artistList) {
+            if ($lastArtistList["artistlist_PK"] != $artistList["artistlist_PK"]) {
+                $artistsArrObj = array();
+            }
             foreach ($allArtists as $artist) {
-
                 if ($artistList["artist_PK"] == $artist->getPk()) {
                     $artistsArrObj [] = $artist;
+                    break;
                 }
             }
-            //var_dump($artistList["artistlist_PK"]);echo"asd";
-           // var_dump($artistListObjArray);
             $artistListObjArray[$artistList["artistlist_PK"]]->setArtists($artistsArrObj);
-
+            $lastArtistList = $artistList;
         }
-
-
         $this->_allArtistLists = $artistListObjArray;
-        var_dump($this->_allArtistLists);
     }
 
     private function getArtistLists() : array
@@ -265,7 +255,6 @@ class Main
         /* @var $subgenre Subgenre */
 
         $this->initializeAllArtistLists();
-        return $this->_allArtistLists;
         $artistLists = array();
         foreach ($this->_allArtistLists as $artistList) {
             if ($artistList->getPk() == $listPk) {
@@ -287,7 +276,7 @@ class Main
                 $artistLists[] = array("listName" => $artistList->getName(), "artists" => $artistsArr);
             }
         }
-        return array("artistLists" => $artistLists);
+        return array("artistList" => $artistLists);
     }
 
     /*
