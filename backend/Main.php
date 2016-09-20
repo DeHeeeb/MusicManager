@@ -128,6 +128,7 @@ class Main
 
     private function getArtistLists() : array
     {
+
         $db = DBconnect::getInstance();
         $mysqli = $db->getConnection();
 
