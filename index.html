@@ -8,6 +8,7 @@
 <body>
 <button onclick="login('Ammonix','tstpw')">login</button>
 <button onclick="logout()">logout</button>
+<button onclick="register()">register</button>
 <button onclick="getArtists()">getAllArtists</button>
 <button onclick="getArtistsInList('1')">getAllArtistsInList1</button>
 </body>
@@ -35,8 +36,7 @@
             }
         }).done(function (data) {
             console.log(data);
-            console.log(data.response[0].data[0].data_Nr_1.artists[0].artistName);
-            $("body").append("<br>" + data.response[0].data[0].data_Nr_1.artists[0].artistName);
+            $("body").append("<br>" + data.response[0].data.artists[0].artistName);
         });
     }
     function getArtistsInList(artistList) {
@@ -50,8 +50,7 @@
             }
         }).done(function (data) {
             console.log(data);
-            console.log(data.response[0].data[0].data_Nr_1.artists[0].artistName);
-            $("body").append("<br>" + data.response[0].data[0].data_Nr_1.artists[0].artistName);
+            $("body").append("<br>" + data.response[0].data.artistList[0].listName);
         });
     }
     function login(username, password) {
@@ -62,7 +61,7 @@
             data: {
                 function: "login",
                 username: username,
-                password: password,
+                password: password
             }
         }).done(function (data) {
             console.log(data);
@@ -80,5 +79,20 @@
             console.log(data);
         });
     }
+    function register() {
+        $.ajax({
+            method: "POST",
+            dataType: "json",
+            url: "backend/Main.php",
+            data: {
+                function: "register",
+                username:  Math.random().toString(36).substr(2, 8),
+                password:  Math.random().toString(36).substr(2, 5)
+            }
+        }).done(function (data) {
+            console.log(data);
+        });
+    }
+
 </script>
 </html>

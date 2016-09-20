@@ -32,18 +32,11 @@ class DBconnect
     // Constructor
     private function __construct()
     {
-        $actual_link = "http://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-        if ($actual_link == "http://musicmanager.localhost/backend/Main.php") {
-            $this->_host = "localhost";
-            $this->_username = "root";
-            $this->_password = "";
-            $this->_database = "ammonixc_MusicManager";
-        } else {
-            $this->_host = "ammonixc.mysql.db.internal";
-            $this->_username = "ammonixc_techus";
-            $this->_password = "fVMrEK5C";
-            $this->_database = "ammonixc_MusicManager";
-        }
+        $dbValues = EnvironmentHandler::getDBvalues();
+        $this->_host = $dbValues["host"];
+        $this->_username = $dbValues["username"];
+        $this->_password = $dbValues["password"];
+        $this->_database = $dbValues["database"];
 
 
         $this->_connection = new mysqli($this->_host, $this->_username,

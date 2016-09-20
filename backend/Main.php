@@ -17,7 +17,8 @@ include_once("LoginHandler.php");
 include_once("User.php");
 include_once("Role.php");
 include_once("ArtistList.php");
-
+include_once("EnvironmentHandler.php");
+include_once("Environment.php");
 
 class Main
 {
@@ -128,7 +129,6 @@ class Main
 
     private function getArtistLists() : array
     {
-
         $db = DBconnect::getInstance();
         $mysqli = $db->getConnection();
 
@@ -324,6 +324,7 @@ class Main
 
         $username = $_POST ["username"];
         $password = $_POST["password"];
+
         if ($this->_user->getRole() == 0) {
             $userObj = LoginHandler::login($username, $password);
 
@@ -341,23 +342,69 @@ class Main
         LoginHandler::logout();
     }
 
+    public function register()
+    {
+        //TODO IMPLEMENT
+        ResponseHandler::addErrorMessage("Not Implemented yet");
+        return;
+//        function usernameVerifivation(string $username):bool
+//        {
+//            if (strlen($username) < 8 || strlen($username) > 16) {
+//                ResponseHandler::addErrorMessage("Username lenght has to be between 8 and 16 characters.");
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        function passwordVerification(string $password):bool
+//        {
+//            if (strlen($password) < 8 || strlen($password) > 16) {
+//                //TODO write that man
+//                ResponseHandler::addErrorMessage("Username lenght has to be between 8 and 16 characters.");
+//                return false;
+//            }
+//            return true;
+//        }
+//
+//        function emailVerification(string $email):bool
+//        {
+//            // $re ='/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;';
+//            // preg_quote($re,);
+//            //preg_match() ;
+//            return true;
+//        }
+//
+//        $username = $_POST ["username"];
+//        $password = $_POST["password"];
+//        $email = $_POST["email"];
+//        usernameVerifivation($username);
+//        passwordVerification($password);
+//        emailVerification($email);
+
+
+    }
+
     public function getUser()
     {
-        ResponseHandler::addData(array("user" => array(
-            "username" => $this->_user->getUsername(),
-            "email" => $this->_user->getEmail(),
-            "createtime" => $this->_user->getCreatetime(),
-            "role" => $this->_user->getRole())
+        ResponseHandler::setData(array(
+            "user" => array(
+                "username" => $this->_user->getUsername(),
+                "email" => $this->_user->getEmail(),
+                "createtime" => $this->_user->getCreatetime(),
+                "role" => $this->_user->getRole())
         ));
     }
 
     public function getArtists()
     {
-
-        if (isset ($_POST["artistList"]) || !empty($_POST["artistList"])) {
-            ResponseHandler::addData($this->getArtistsByList($_POST["artistList"]));
+        if (PermissionHandler::permission($this->_user, Role::USER)) {
+            if (isset ($_POST["artistList"]) || !empty($_POST["artistList"])) {
+                ResponseHandler::setData($this->getArtistsByList($_POST["artistList"]));
+            } else {
+                ResponseHandler::setData($this->getAllArtists());
+            }
         } else {
-            ResponseHandler::addData($this->getAllArtists());
+            ResponseHandler::addErrorMessage("Permission for gettingArtists denied!");
         }
     }
 
@@ -370,10 +417,11 @@ function callFunction(Main $main, string $function)
     if (method_exists($main, $function)) {
         $main->$function();
     } else {
-        ResponseHandler::addErrorMessage("Function: '" . $_POST["function"] . "' does not exist");
+        ResponseHandler::addErrorMessage("Function '" . $_POST["function"] . "', with passed parameters in " . var_export($_POST, true) . " does not exist.");
     }
 }
 
+//error_reporting(0);
 header('Content-Type: application/json');
 session_start();
 $main = Main::getInstance();

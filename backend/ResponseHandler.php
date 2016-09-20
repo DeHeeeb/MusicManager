@@ -37,9 +37,13 @@ abstract class ResponseHandler
         return self::$_data;
     }
 
-    public static function addData(array $data)
+//    public static function addData(array $data)
+//    {
+//        self::$_data[] = array("data_Nr_" . (count(self::$_data) + 1) => $data);
+//    }
+    public static function setData(array $_data)
     {
-        self::$_data[] = array("data_Nr_" . (count(self::$_data) + 1) => $data);
+        self::$_data = $_data;
     }
 
     public static function getResponse(): array

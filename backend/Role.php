@@ -8,8 +8,9 @@
  */
 class Role
 {
-    const Admin = 3;
-    const Moderator = 2;
-    const User = 1;
-    const Visitor = 0;
+    const __default = self::VISITOR;
+    const ADMIN = 3;
+    const MODERATOR = 2;
+    const USER = 1;
+    const VISITOR = 0;
 }
