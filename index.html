@@ -6,7 +6,7 @@
     <script src="jquery-3.1.0.min.js"></script>
 </head>
 <body>
-<button onclick="login('Ammonix','tstpw')">login</button>
+<button onclick="login('Ammonix','tstpw123')">login</button>
 <button onclick="logout()">logout</button>
 <button onclick="register()">register</button>
 <button onclick="getArtists()">getAllArtists</button>
@@ -87,7 +87,7 @@
             data: {
                 function: "register",
                 username:  Math.random().toString(36).substr(2, 8),
-                password:  Math.random().toString(36).substr(2, 5)
+                password:  Math.random().toString(36).substr(2, 8)
             }
         }).done(function (data) {
             console.log(data);

@@ -61,6 +61,29 @@ class Main
         return new User("Visitor", "", time(), 0);
     }
 
+    private function registerUser(string $username, string $email, string $password): bool
+    {
+        $db = DBconnect::getInstance();
+        $mysqli = $db->getConnection();
+
+        $mysqli->autocommit(FALSE);
+        $query = "CALL registerUser(?,?,?);";
+        //$query = 'CALL registerUser("asdad","asdad","asasa");';
+        $options = [
+            'cost' => 12,
+        ];
+        $hashedpassword = password_hash($password, PASSWORD_BCRYPT, $options);
+
+        if ($stmt = $mysqli->prepare($query)) {
+            $stmt->bind_param("sss", $username, $email, $hashedpassword);
+            $stmt->execute();
+            $mysqli->commit();
+            return true;
+        }
+        ResponseHandler::addErrorMessage("Unknown error in prepare statement of query: " . $query);
+        return false;
+    }
+
     private function initializeAllArtists()
     {
         $allArtists = $this->getAllArtistsFromDB();
@@ -321,9 +344,15 @@ class Main
     public function login()
     {
 
+        if (empty($_POST ["username"]) || empty($_POST["password"])) {
+            ResponseHandler::addErrorMessage("Username or password not set.");
+            return;
+        }
+
 
         $username = $_POST ["username"];
         $password = $_POST["password"];
+
 
         if ($this->_user->getRole() == 0) {
             $userObj = LoginHandler::login($username, $password);
@@ -345,42 +374,58 @@ class Main
     public function register()
     {
         //TODO IMPLEMENT
-        ResponseHandler::addErrorMessage("Not Implemented yet");
-        return;
-//        function usernameVerifivation(string $username):bool
-//        {
-//            if (strlen($username) < 8 || strlen($username) > 16) {
-//                ResponseHandler::addErrorMessage("Username lenght has to be between 8 and 16 characters.");
-//                return false;
-//            }
-//            return true;
-//        }
-//
-//        function passwordVerification(string $password):bool
-//        {
-//            if (strlen($password) < 8 || strlen($password) > 16) {
-//                //TODO write that man
-//                ResponseHandler::addErrorMessage("Username lenght has to be between 8 and 16 characters.");
-//                return false;
-//            }
-//            return true;
-//        }
-//
-//        function emailVerification(string $email):bool
-//        {
-//            // $re ='/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;';
-//            // preg_quote($re,);
-//            //preg_match() ;
-//            return true;
-//        }
-//
-//        $username = $_POST ["username"];
-//        $password = $_POST["password"];
-//        $email = $_POST["email"];
-//        usernameVerifivation($username);
-//        passwordVerification($password);
-//        emailVerification($email);
+        //ResponseHandler::addErrorMessage("Not Implemented yet");
+        //return;
+        function usernameVerifivation(string $username):bool
+        {
+            if (strlen($username) < 3 || strlen($username) > 16) {
+                ResponseHandler::addErrorMessage("Username lenght has to be between 8 and 16 characters.");
+                return false;
+            }
+            return true;
+        }
 
+        function passwordVerification(string $password):bool
+        {
+            if (strlen($password) < 8 || strlen($password) > 16) {
+                //TODO write that man
+                ResponseHandler::addErrorMessage("Password lenght has to be between 8 and 16 characters.");
+                return false;
+            }
+            return true;
+        }
+
+        function emailVerification(string $email):bool
+        {
+            // $re ='/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;';
+            // preg_quote($re,);
+            //preg_match() ;
+            return true;
+        }
+
+        if (empty($_POST ["username"]) || empty($_POST["password"])) {
+            ResponseHandler::addErrorMessage("Username or password not set.");
+            return;
+        }
+
+
+        $email = "";
+        $username = $_POST ["username"];
+        $password = $_POST["password"];
+        if (!empty($_POST["email"])) {
+            $email = $_POST["email"];
+            emailVerification($email);
+        }
+
+        usernameVerifivation($username);
+        passwordVerification($password);
+
+        if ($this->registerUser($username, $email, $password)) {
+            $this->_user = LoginHandler::login($username, $password);
+            ResponseHandler::addSuccessMessages("User successfully created.");
+        } else {
+            ResponseHandler::addErrorMessage("User not created.");
+        }
 
     }
 
