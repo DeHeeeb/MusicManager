@@ -84,6 +84,12 @@ class Main
         return false;
     }
 
+    private function isArtistsListOnUser() : bool
+    {
+        //TODO Implement
+        return true;
+    }
+
     private function initializeAllArtists()
     {
         $allArtists = $this->getAllArtistsFromDB();
@@ -369,13 +375,11 @@ class Main
     public function logout()
     {
         LoginHandler::logout();
+        $this->_user = $this->createVisitor();
     }
 
     public function register()
     {
-        //TODO IMPLEMENT
-        //ResponseHandler::addErrorMessage("Not Implemented yet");
-        //return;
         function usernameVerifivation(string $username):bool
         {
             if (strlen($username) < 3 || strlen($username) > 16) {
@@ -397,6 +401,7 @@ class Main
 
         function emailVerification(string $email):bool
         {
+            //TODO write that man
             // $re ='/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;';
             // preg_quote($re,);
             //preg_match() ;
@@ -442,15 +447,19 @@ class Main
 
     public function getArtists()
     {
-        if (PermissionHandler::permission($this->_user, Role::USER)) {
-            if (isset ($_POST["artistList"]) || !empty($_POST["artistList"])) {
-                ResponseHandler::setData($this->getArtistsByList($_POST["artistList"]));
+
+        if (isset ($_POST["artistList"]) || !empty($_POST["artistList"])) {
+            if (PermissionHandler::permission($this->_user, Role::USER)) {
+                if ($this->isArtistsListOnUser()) {
+                    ResponseHandler::setData($this->getArtistsByList($_POST["artistList"]));
+                }
             } else {
-                ResponseHandler::setData($this->getAllArtists());
+                ResponseHandler::addErrorMessage("Permission for gettingArtists denied!");
             }
         } else {
-            ResponseHandler::addErrorMessage("Permission for gettingArtists denied!");
+            ResponseHandler::setData($this->getAllArtists());
         }
+
     }
 
 }
